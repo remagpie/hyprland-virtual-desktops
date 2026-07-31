@@ -174,6 +174,7 @@ to the same vdesk given the same number of monitors, unless you focus (e.g. with
 - Given four monitors...
 
 The vdesk a workspace will end up to is easily computed by doing `ceil(workspace_id / n_monitors)`. You know where I'm going with this one...you can easily script it.
+Note that this behavior can be changed by `firstworkspaces` option.
 
 ### Hyprctl commands
 
@@ -240,6 +241,7 @@ This plugin exposes a few configuration options, under the `plugin:virtual-deskt
 | Name            | description                                                                                                                                                                                                    | type                         | example                                          |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | ------------------------------------------------ |
 | names           | map a vdesk id with a name                                                                                                                                                                                     | map[int:string], see below   | `names = 1:coding, 2:internet, 3:mail and chats` |
+| firstworkspaces | assign first workspace of each vdesk id                                                                                                                                                                        | map[int:int], see below   | `firstworkspaces = 1:11, 2:21, 3:31` |
 | cycleworkspaces | if set to 1 and switching to the currently active vdesk, workspaces will be swapped between your monitors (see [swapactiveworkspaces](https://wiki.hyprland.org/Configuring/Dispatchers/#list-of-dispatchers)) | `0` or `1`                   | `cycleworkspaces = 1`                            |
 | cycle_populated_only | if set to 1, `cyclevdesks`/`backcyclevdesks` (and `movetonextdesk`/`movetoprevdesk` with cycling) skip vdesks that contain no windows. The currently active vdesk is always reachable. Defaults to 0 (cycle through all visited vdesks) | `0` or `1`                   | `cycle_populated_only = 1`                            |
 | rememberlayout  | chooses how layouts should be remembered (see [Layouts](#Layouts)), defaults to `size`                                                                                                                         | `none`, `size` or `monitors` | `remember = size`                                |
@@ -260,6 +262,7 @@ hl.config({
     plugin = {
         ["virtual_desktops"] = {
             names = "1:coding, 2:internet, 3:mail and chats",
+            firstworkspaces = "1:11, 2:21, 3:31",
             cycleworkspaces = 0,
             rememberlayout = "size",
             notifyinit = 1,
@@ -278,6 +281,7 @@ stickyrule = title:thunderbird,mail
 plugin {
     virtual-desktops {
         names = 1:coding, 2:internet, 3:mail and chats
+        firstworkspaces = 1:11, 2:21, 3:31
         cycleworkspaces = 1
         rememberlayout = size
         notifyinit = 0

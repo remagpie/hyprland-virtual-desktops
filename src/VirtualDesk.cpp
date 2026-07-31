@@ -1,13 +1,15 @@
 #include "VirtualDesk.hpp"
 #include "globals.hpp"
+#include "workspace_selection.hpp"
 #include <climits>
 #include <algorithm>
 #include <src/state/WorkspaceState.hpp>
 #include <unordered_set>
 
-VirtualDesk::VirtualDesk(int id, std::string name) {
-    this->id   = id;
-    this->name = name;
+VirtualDesk::VirtualDesk(int id, std::string name, int firstWorkspace) {
+    this->id             = id;
+    this->name           = name;
+    this->firstWorkspace = firstWorkspace;
     layouts.push_back(generateCurrentMonitorLayout());
     m_activeLayout_idx = 0;
 }
@@ -95,6 +97,17 @@ void VirtualDesk::resetLayout() {
     layouts[m_activeLayout_idx] = generateCurrentMonitorLayout();
 }
 
+void VirtualDesk::setFirstWorkspace(int newFirstWorkspace) {
+    if (firstWorkspace == newFirstWorkspace)
+        return;
+
+    firstWorkspace = newFirstWorkspace;
+    layouts.clear();
+    layouts.push_back(generateCurrentMonitorLayout());
+    m_activeLayout_idx = 0;
+    activeIsValid      = true;
+}
+
 void VirtualDesk::deleteInvalidMonitorOnAllLayouts(const CSharedPointer<Monitor::CMonitor>& monitor) {
     for (auto layout : layouts) {
         deleteInvalidMonitor(monitor);
@@ -124,7 +137,7 @@ void VirtualDesk::deleteInvalidMonitorsOnActiveLayout() {
     }
     for (const auto& [mon, workspaceId] : layout_copy) {
         if (enabledMonitors_set.count(mon) <= 0) {
-            auto newMonitor                         = firstAvailableMonitor(enabledMonitors);
+            auto newMonitor = firstAvailableMonitor(enabledMonitors);
             if (newMonitor)
                 layouts[m_activeLayout_idx][newMonitor] = workspaceId;
             layouts[m_activeLayout_idx].erase(mon);
@@ -190,7 +203,7 @@ MonitorLayout VirtualDesk::generateCurrentMonitorLayout() {
     auto          monitors = currentlyEnabledMonitors();
     if (PHANDLE && isVerbose())
         printLog("vdesk " + name + " computing new layout for " + std::to_string(monitors.size()) + " monitors");
-    auto vdeskFirstWorkspace = (this->id - 1) * monitors.size() + 1;
+    auto vdeskFirstWorkspace = firstWorkspaceForVDesk(this->id, monitors.size(), this->firstWorkspace);
     int  j                   = 0;
     for (size_t i = vdeskFirstWorkspace; i < vdeskFirstWorkspace + monitors.size(); i++) {
         layout[monitors[j]] = i;

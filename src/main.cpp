@@ -11,6 +11,7 @@
 #include "sticky_apps.hpp"
 #include "lua_bindings.hpp"
 #include "dispatchers.hpp"
+#include "workspace_selection.hpp"
 
 #include <plugins/PluginAPI.hpp>
 #include <src/desktop/DesktopTypes.hpp>
@@ -57,6 +58,16 @@ void                                 parseNamesConf(const std::string& _conf) {
         // #aa1245
         HyprlandAPI::addNotification(PHANDLE, "Syntax error in your virtual-desktops names config", CHyprColor{4289335877}, 8000);
     }
+}
+
+void parseFirstWorkspacesConf(const std::string& rawConf) {
+    auto firstWorkspaces = parseFirstWorkspaces(rawConf);
+    if (!firstWorkspaces) {
+        HyprlandAPI::addNotification(PHANDLE, "Syntax error in your virtual-desktops firstworkspaces config", CHyprColor{4289335877}, 8000);
+        return;
+    }
+
+    manager->setFirstWorkspaces(std::move(*firstWorkspaces));
 }
 
 Hyprlang::CParseResult parseStickyRule(const char* command, const char* value) {
@@ -407,6 +418,7 @@ void onConfigReloaded() {
         notifiedInit = true;
     }
     parseNamesConf(config.names->value());
+    parseFirstWorkspacesConf(config.firstWorkspaces->value());
     manager->loadLayoutConf();
 }
 
@@ -477,6 +489,7 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
 
     // Configs
     HyprlandAPI::addConfigValueV2(PHANDLE, config.names);
+    HyprlandAPI::addConfigValueV2(PHANDLE, config.firstWorkspaces);
     HyprlandAPI::addConfigValueV2(PHANDLE, config.cycleWorkspaces);
     HyprlandAPI::addConfigValueV2(PHANDLE, config.cyclePopulatedOnly);
     HyprlandAPI::addConfigValueV2(PHANDLE, config.rememberLayout);

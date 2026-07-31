@@ -12,6 +12,7 @@ class VirtualDeskManager {
     std::unordered_map<int, std::shared_ptr<VirtualDesk>> vdesksMap;
     int                                                   lastDesk      = -1;
     std::unordered_map<int, std::string>                  vdeskNamesMap = {{1, "1"}};
+    std::unordered_map<int, int>                          firstWorkspacesMap;
     RememberLayoutConf                                    conf;
     const std::shared_ptr<VirtualDesk>&                   activeVdesk();
     void                                                  changeActiveDesk(std::string&, bool);
@@ -23,6 +24,7 @@ class VirtualDeskManager {
     int                                                   moveToDesk(std::string&, int vdeskId = -1);
     void                                                  loadLayoutConf();
     void                                                  invalidateAllLayouts();
+    void                                                  setFirstWorkspaces(std::unordered_map<int, int> firstWorkspaces);
     void                                                  resetAllVdesks();
     void                                                  resetVdesk(const std::string& arg);
     void                                                  deleteInvalidMonitorsOnAllVdesks(const CSharedPointer<Monitor::CMonitor>&);

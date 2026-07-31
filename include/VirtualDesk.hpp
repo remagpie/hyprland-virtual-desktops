@@ -33,9 +33,10 @@ struct std::hash<const CSharedPointer<Monitor::CMonitor>> {
 
 class VirtualDesk {
   public:
-    VirtualDesk(int id = 1, std::string name = "1");
+    VirtualDesk(int id = 1, std::string name = "1", int firstWorkspace = -1);
     int                                      id;
     std::string                              name;
+    int                                      firstWorkspace;
     std::vector<MonitorLayout>               layouts;
 
     const MonitorLayout&                     activeLayout(const RememberLayoutConf&, const CSharedPointer<Monitor::CMonitor>& exclude = nullptr);
@@ -44,6 +45,7 @@ class VirtualDesk {
     void                                     changeWorkspaceOnMonitor(WORKSPACEID, const CSharedPointer<Monitor::CMonitor>&);
     void                                     invalidateActiveLayout();
     void                                     resetLayout();
+    void                                     setFirstWorkspace(int firstWorkspace);
     CSharedPointer<Monitor::CMonitor>        deleteInvalidMonitor(const CSharedPointer<Monitor::CMonitor>&);
     void                                     deleteInvalidMonitorsOnActiveLayout();
     void                                     deleteInvalidMonitorOnAllLayouts(const CSharedPointer<Monitor::CMonitor>&);

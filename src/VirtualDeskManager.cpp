@@ -345,7 +345,8 @@ std::shared_ptr<VirtualDesk> VirtualDeskManager::getOrCreateVdesk(int vdeskId) {
     if (!vdesksMap.contains(vdeskId)) {
         if (isVerbose())
             printLog("creating new vdesk with id " + std::to_string(vdeskId));
-        auto vdesk = vdesksMap[vdeskId] = std::make_shared<VirtualDesk>(vdeskId, vdeskNamesMap[vdeskId]);
+        const auto firstWorkspace = firstWorkspacesMap.contains(vdeskId) ? firstWorkspacesMap.at(vdeskId) : -1;
+        auto       vdesk = vdesksMap[vdeskId] = std::make_shared<VirtualDesk>(vdeskId, vdeskNamesMap[vdeskId], firstWorkspace);
         return vdesk;
     }
     return vdesksMap[vdeskId];
@@ -354,6 +355,14 @@ std::shared_ptr<VirtualDesk> VirtualDeskManager::getOrCreateVdesk(int vdeskId) {
 void VirtualDeskManager::invalidateAllLayouts() {
     for (const auto& [_, vdesk] : vdesksMap) {
         vdesk->invalidateActiveLayout();
+    }
+}
+
+void VirtualDeskManager::setFirstWorkspaces(std::unordered_map<int, int> firstWorkspaces) {
+    firstWorkspacesMap = std::move(firstWorkspaces);
+    for (const auto& [vdeskId, vdesk] : vdesksMap) {
+        const auto firstWorkspace = firstWorkspacesMap.contains(vdeskId) ? firstWorkspacesMap.at(vdeskId) : -1;
+        vdesk->setFirstWorkspace(firstWorkspace);
     }
 }
 
